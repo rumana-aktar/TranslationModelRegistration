@@ -1,4 +1,4 @@
-function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy] = getTranslation(I1, I2, displayMatches, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion)
+function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy, no_matched] = getTranslation(I1, I2, displayMatches, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion)
    
     %% I1 is previous frame, so its strongest points should be considered; or it does not matter
     points1 = detectSURFFeatures(I1, 'MetricThreshold', 500);
@@ -126,7 +126,7 @@ function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy] =
     mode_iy=mode(motion(:,2));
     
     
-
+    no_matched=size(motion,1);
     
     
     

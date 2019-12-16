@@ -16,10 +16,10 @@ clear all; clc;
 
 %% parameters
 lineWidth=4;
-border=1; %--if border==0, no border, 
+border=0; %--if border==0, no border, 
           %--if border==1, border for current frame only,
           %--if border==2, border for all frames together
-motionBorderTogether=1; %-- 0: iMosaic(w/o border)in MosaicL directory + Motion in Motion directory
+motionBorderTogether=2; %-- 0: iMosaic(w/o border)in MosaicL directory + Motion in Motion directory
                         %-- 1: iMosaic(w/o border)+Motion in MosaicL directory
                         %-- 2: iMosaic(w/o border)in MosaicL directory
 dirname='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/';

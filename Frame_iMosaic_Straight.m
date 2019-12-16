@@ -5,11 +5,11 @@ warning off;
 
 %% bark, bikes, boat, graf, leuven, trees, ubc, wall
 
+frameScale=1;
 
-
-dirnameFrame='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2';
-dirnameMosaic='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicL';
-dirnameMotion='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicMotion';
+dirnameFrame='/Volumes/F/Courses/MesenteryData/SFM_100_BI';
+dirnameMosaic='/Volumes/F/Courses/MesenteryData/SFM_100_BI/NCC/MosaicL';
+dirnameMotion='/Volumes/F/Courses/MesenteryData/SFM_100_BI/NCC/MosaicMotion';
 
 dirnameOut=sprintf('%s/Fr_Mosaic_ST/', dirnameMosaic);
 if (~isdir(dirnameOut))
@@ -37,7 +37,7 @@ line=5;
  frame_rate='Frame Rate -> 6(30)';
  frame_size='Frame Size -> 720x480';
 str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
-fontSize=60;
+fontSize=40;
 
 
 %% seq5, fr+501:600
@@ -54,7 +54,7 @@ fontSize=60;
 %cut off extra black region  
 j=1;
 i=1;
-frame_no=1;
+frame_no=500*5;
 while (i<=size(filesMosaic,1))
     i
     %% read iMosaic
@@ -63,11 +63,11 @@ while (i<=size(filesMosaic,1))
     
     %% read frame and upscale it
     IFrame = imread(fullfile(dirnameFrame, filesFrame(j).name));    
-    IFrame = imresize(IFrame, 2);    [mF, nF, ~]=size(IFrame);
+    IFrame = imresize(IFrame, frameScale);    [mF, nF, ~]=size(IFrame);
     
     %% read frame and upscale it
     IMotion = imread(fullfile(dirnameMotion, filesMotion(j).name));    
-    IMotion = imresize(IMotion, 2);    [mMt, nMt, ~]=size(IMotion);
+    IMotion = imresize(IMotion, frameScale);    [mMt, nMt, ~]=size(IMotion);
     
     Canvas=IFrame;
     Canvas(mF+1: mM, : ,:)=0;
@@ -78,7 +78,7 @@ while (i<=size(filesMosaic,1))
     str_info1=sprintf('FrameNo -> %04d\n%s', frame_no, str_info);
     Canvas = insertText(uint8(Canvas), [100 mF+100 ], str_info1, 'AnchorPoint', 'LeftTop', 'fontSize', fontSize, 'BoxColor', 'black', 'TextColor', 'white'); %1800      
  
-    Canvas(mF*2+100+1: mF*2+100+mMt, 1:nMt, :)=IMotion;
+    %Canvas(mF*2+100+1: mF*2+100+mMt, 1:nMt, :)=IMotion;
     %imshow(uint8(Canvas));     
     
     fname=sprintf('AA_%06d.png', i);

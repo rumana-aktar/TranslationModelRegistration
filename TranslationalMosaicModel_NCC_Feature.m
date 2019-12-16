@@ -52,7 +52,7 @@ template_hight=150; template_width=200;
 
 
 %% input and output directory
-dirname='/Volumes/F/Courses/MesenteryData/ABQ_Synthetic/';
+dirname='/Volumes/F/Courses/MesenteryData/Sequence5/';
 if NCC==1
      dirnameOut=sprintf('%sNCC_%d_%d_%dx%d/',dirname, template_row_start, template_col_start, template_hight, template_width);
 else
