@@ -18,9 +18,8 @@ function getImosaicsColoredBorderFinal(MM, xy, dirname, Fm, Fn, FrameDir, filesF
 %% output mosaicL and maskL directory
 dirnameOutMosaic=sprintf('%sMosaicL/',dirname); mkdir(dirnameOutMosaic);
 
-if motionBorderTogether == 0
-    dirnameOutMotion=sprintf('%sMosaicMotion/',dirname); mkdir(dirnameOutMotion);
-end
+dirnameOutMotion=sprintf('%sMosaicMotion/',dirname); mkdir(dirnameOutMotion);
+
 
 [M,N, ~]=size(MM)
 
@@ -90,6 +89,8 @@ for i=1:size(xy)
     %% write output image
     fname=sprintf('Mosaic_%06d.png', i);
     fname_wpath=fullfile(dirnameOutMosaic,fname);
+    
+    
 
     if border==0
         imwrite(uint8(iMosaic),fname_wpath);         
@@ -100,6 +101,11 @@ for i=1:size(xy)
     if border==2
         iMosaic=iMosaicBrd;
     end
+
+    %% just for saving the motion part frame seperately
+    fname=sprintf('Motion_%06d.png', i);
+    fname_wpath=fullfile(dirnameOutMotion,fname);
+    imwrite(uint8(iMosaicBrd(m1:m2, n1:n2, :)),fname_wpath);         
 
 
 

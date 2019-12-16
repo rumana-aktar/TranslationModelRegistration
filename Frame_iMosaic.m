@@ -9,7 +9,7 @@ warning off;
 
 dirnameFrame='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2';
 dirnameMosaic='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicL';
-dirnameMotion='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped/FeatureMean/Motion_Paired';
+dirnameMotion='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicMotion';
 
 dirnameOut=sprintf('%s/Fr_Mosaic/', dirnameMosaic);
 if (~isdir(dirnameOut))
@@ -23,19 +23,19 @@ if( size(filesFrame,1) < 2 )
     return;
 end;% 
 filesMosaic = dir(fullfile(dirnameMosaic,'Mo*.png'));
-filesMotion = dir(fullfile(dirnameMotion,'AA*.png'));
+filesMotion = dir(fullfile(dirnameMotion,'Mo*.png'));
 
 lines=5;
 
 %% seq5: whole sequence
    seq_name='Sequence Name -> VTS_01_5.VOB';
- start_time='   Start Time -> 16:54:43:32';
-   end_time='     End Time -> 16:57:21:86';
+ start_time='Start Time -> 16:54:43:32';
+   end_time='End Time -> 16:57:21:86';
   time_intv='Time Interval -> 00:02:78:54';
-       date='         Date -> 07-24';
- frame_rate='   Frame Rate -> 6(30)';
- frame_size='   Frame Size -> 720x480';
-str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s',seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
+       date='Date -> 07-24';
+ frame_rate='Frame Rate -> 6(30)';
+ frame_size='Frame Size -> 720x480';
+str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
 fontSize=60;
 
 
@@ -80,10 +80,10 @@ while (i<=size(filesMosaic,1))
     IMosaicT(mM+1:mM+mF, 1:nF, :)=IFrame;  
     
     %% add text
-    str_info1=sprintf('      FrameNo -> %04d\n%s', frame_no, str_info);
+    str_info1=sprintf('FrameNo -> %04d\n%s', frame_no, str_info);
     IMosaicT = insertText(uint8(IMosaicT), [nF+400 mM+lines+200 ], str_info1, 'AnchorPoint', 'LeftTop', 'fontSize', fontSize, 'BoxColor', 'black', 'TextColor', 'white'); %1800      
  
-    imshow(uint8(IMosaicT));     
+    %imshow(uint8(IMosaicT));     
     
     fname=sprintf('AA_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);

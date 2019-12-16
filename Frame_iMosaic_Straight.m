@@ -9,7 +9,7 @@ warning off;
 
 dirnameFrame='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2';
 dirnameMosaic='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicL';
-dirnameMotion='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped/FeatureMean/Motion_Paired';
+dirnameMotion='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/MosaicMotion';
 
 dirnameOut=sprintf('%s/Fr_Mosaic_ST/', dirnameMosaic);
 if (~isdir(dirnameOut))
@@ -23,21 +23,21 @@ if( size(filesFrame,1) < 2 )
     return;
 end;% 
 filesMosaic = dir(fullfile(dirnameMosaic,'Mo*.png'));
-filesMotion = dir(fullfile(dirnameMotion,'AA*.png'));
+filesMotion = dir(fullfile(dirnameMotion,'Mo*.png'));
 
 line=5;
 
+
 %% seq5: whole sequence
    seq_name='Sequence Name -> VTS_01_5.VOB';
- start_time='   Start Time -> 16:54:43:32';
-   end_time='     End Time -> 16:57:21:86';
+ start_time='Start Time -> 16:54:43:32';
+   end_time='End Time -> 16:57:21:86';
   time_intv='Time Interval -> 00:02:78:54';
-       date='         Date -> 07-24';
- frame_rate='   Frame Rate -> 6(30)';
- frame_size='   Frame Size -> 720x480';
-str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s',seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
+       date='Date -> 07-24';
+ frame_rate='Frame Rate -> 6(30)';
+ frame_size='Frame Size -> 720x480';
+str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
 fontSize=60;
-
 
 
 %% seq5, fr+501:600
@@ -65,15 +65,20 @@ while (i<=size(filesMosaic,1))
     IFrame = imread(fullfile(dirnameFrame, filesFrame(j).name));    
     IFrame = imresize(IFrame, 2);    [mF, nF, ~]=size(IFrame);
     
+    %% read frame and upscale it
+    IMotion = imread(fullfile(dirnameMotion, filesMotion(j).name));    
+    IMotion = imresize(IMotion, 2);    [mMt, nMt, ~]=size(IMotion);
+    
     Canvas=IFrame;
     Canvas(mF+1: mM, : ,:)=0;
     Canvas(:, nF+1:nF+line ,:)=255; [mC, nC, ~]=size(Canvas);
     Canvas(:, nC+1:nC+nM ,:)=0;    
     Canvas(:, nC+1:nC+nM ,:)=IMosaic;
 
-    str_info1=sprintf('      FrameNo -> %04d\n%s', frame_no, str_info);
-    Canvas = insertText(uint8(Canvas), [50 mF*2 ], str_info1, 'AnchorPoint', 'LeftTop', 'fontSize', fontSize, 'BoxColor', 'black', 'TextColor', 'white'); %1800      
+    str_info1=sprintf('FrameNo -> %04d\n%s', frame_no, str_info);
+    Canvas = insertText(uint8(Canvas), [100 mF+100 ], str_info1, 'AnchorPoint', 'LeftTop', 'fontSize', fontSize, 'BoxColor', 'black', 'TextColor', 'white'); %1800      
  
+    Canvas(mF*2+100+1: mF*2+100+mMt, 1:nMt, :)=IMotion;
     %imshow(uint8(Canvas));     
     
     fname=sprintf('AA_%06d.png', i);
