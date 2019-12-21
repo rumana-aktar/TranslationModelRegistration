@@ -1,8 +1,10 @@
-function [mosaic, mask, prevMask, xbegin, ybegin, mosaicADD, mosaicAVG, xy]=handleNegativeMotion(mosaic, mask, prevMask, xbegin, ybegin, ADD, mosaicADD, AVG, mosaicAVG, xy)
+function [mosaic, mask, prevMask, xbegin, ybegin, mosaicADD, mosaicAVG, mosaicFUSE, mosaicEdge, xy]=handleNegativeMotion(mosaic, mask, prevMask, xbegin, ybegin, ADD, mosaicADD, AVG, mosaicAVG, mosaicFUSE, mosaicEdge, xy)
 
 %% if xbegin and ybegin turn out to be negative
 if xbegin<1
     mosaic=[zeros(size(mosaic,1), -xbegin+1, 3) mosaic];
+    mosaicFUSE=[zeros(size(mosaicFUSE,1), -xbegin+1, 3) mosaicFUSE];
+    mosaicEdge=[zeros(size(mosaicEdge,1), -xbegin+1, 3) mosaicEdge];
     prevMask=[zeros(size(prevMask,1), -xbegin+1)  prevMask];
     mask=[zeros(size(mask,1), -xbegin+1)  mask];
 
@@ -19,6 +21,8 @@ if xbegin<1
 end
 if ybegin<1
     mosaic=[zeros(-ybegin+1, size(mosaic,2), 3); mosaic];
+    mosaicFUSE=[zeros(-ybegin+1, size(mosaicFUSE,2), 3); mosaicFUSE];
+    mosaicEdge=[zeros(-ybegin+1, size(mosaicEdge,2), 3); mosaicEdge];
     mask=[zeros(-ybegin+1, size(mask,2)); mask];
     prevMask=[zeros(-ybegin+1, size(prevMask,2)); prevMask];
 

@@ -13,7 +13,7 @@
 %--if border==2, border for all frames together
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function getImosaicsColoredBorderFinal(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, line, motionBorderTogether)
+function getImosaicsColoredBorderFinalBlurry(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, line, motionBorderTogether)
     
 %% output mosaicL and maskL directory
 dirnameOutMosaic=sprintf('%sMosaicL/',dirname); mkdir(dirnameOutMosaic);
@@ -29,7 +29,7 @@ clist=colormap(jet(size(xy,1)));
 clist=clist*255;
 
 %% first mosaic
-iMosaic=zeros(M,N,3); mosaicLast=iMosaic; mosaicLastLast=iMosaic;
+iMosaic=zeros(M,N,3); mosaicLast=iMosaic; mosaicLastLast=iMosaic; mosaicEdge=iMosaic; mask=iMosaic; prevMask=mask;
 for i=1:size(xy)
     i       
 
@@ -38,7 +38,34 @@ for i=1:size(xy)
     m1=xy(i,2); m2=m1+Fm-1;
     n1=xy(i,1); n2=n1+Fn-1;       
     iMosaic(m1:m2, n1:n2, :)=Fr;
+    
+    if i==1
+        mosaicEdge=iMosaic;
+    else
+        
+        Frame=Fr;
+        mask(m1:m2, n1:n2, :)=1;    
+        newPixels=mask-prevMask;
+        newPixels=newPixels(m1:m2, n1:n2, :);
+        
+        if xy(i,10)> xy(i,11)
+            %--REP
+            mosaicEdge(m1:m2, n1:n2, :)=Fr;
+        else
+            %--ADD
+            FrameADD=Fr;
+            canvasROI=mosaicEdge(m1:m2, n1:n2, :);            
+            canvasROI(newPixels==1)=0;
+            FrameADD(newPixels==0)=0;
+            canvasROI=uint8(canvasROI)+FrameADD;
+            mosaicEdge(m1:m2, n1:n2, :)=uint8(canvasROI);
+        end
 
+        
+        
+    end
+    
+    
 
     %% if we want to see motion
     if i==1
@@ -93,7 +120,8 @@ for i=1:size(xy)
     
 
     if border==0
-        imwrite(uint8(iMosaic),fname_wpath);         
+%         imwrite(uint8([iMosaic mosaicEdge]),fname_wpath);      
+%         imwrite(uint8(mosaicEdge),fname_wpath); 
     elseif border==1 || border ==2
         imwrite(uint8(iMosaicBrd),fname_wpath);         
     end
@@ -101,6 +129,8 @@ for i=1:size(xy)
     if border==2
         iMosaic=iMosaicBrd;
     end
+    
+    prevMask=mask;
 
 %     %% just for saving the motion part frame seperately
 %     Im=iMosaicBrd(m1:m2, n1:n2, :);
@@ -113,12 +143,10 @@ for i=1:size(xy)
 
 
 end
-%     %% write output image
-%     fname=sprintf('Mosaic_%06d.png', i);
-%     fname_wpath=fullfile(dirnameOutMosaic,fname);
-%     imwrite(uint8(iMosaicBrd),fname_wpath); 
-
-    
+fname=sprintf('%s%s','Motion_',filesFrame(i).name);
+fname_wpath=fullfile(dirnameOutMotion,fname);
+imwrite(uint8([iMosaic mosaicEdge]), fname_wpath);
+     
 end
 
 

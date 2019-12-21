@@ -5,14 +5,14 @@ warning off;
 
 %% 
 
-additionalMotion=0;
+additionalMotion=1;
 frameScale=1;
 
 
 
-dirnameFrame='/Volumes/F/Courses/MesenteryData/SFM_100_BI';
-dirnameMosaic=sprintf('%s/NCC/MosaicL', dirnameFrame);
-dirnameMotion=sprintf('%s/NCC/MosaicMotion',dirnameFrame);
+dirnameFrame='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2';
+dirnameMosaic=sprintf('%s/NCC_60_100_150x200/MosaicL', dirnameFrame);
+dirnameMotion=sprintf('%s/NCC_60_100_150x200/MosaicMotion',dirnameFrame);
 
 dirnameOut=sprintf('%s/Fr_Mosaic/', dirnameMosaic);
 if (~isdir(dirnameOut))
@@ -62,7 +62,7 @@ end
 %cut off extra black region  
 j=1;
 i=1;
-frame_no=500*5;
+frame_no=1;
 while (i<=size(filesMosaic,1))
     i
     %% read iMosaic

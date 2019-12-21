@@ -16,21 +16,17 @@ clear all; clc;
 
 %% parameters
 lineWidth=4;
-border=0; %--if border==0, no border, 
+border=1; %--if border==0, no border, 
           %--if border==1, border for current frame only,
           %--if border==2, border for all frames together
-motionBorderTogether=2; %-- 0: iMosaic(w/o border)in MosaicL directory + Motion in Motion directory
+motionBorderTogether=1; %-- 0: iMosaic(w/o border)in MosaicL directory + Motion in Motion directory
                         %-- 1: iMosaic(w/o border)+Motion in MosaicL directory
                         %-- 2: iMosaic(w/o border)in MosaicL directory
-dirname='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/NCC_60_100_150x200/';
+dirname='/Volumes/F/Courses/MesenteryData/Seq5/NCC_60_100_150x200/';
 
 %% read the file for Frame start position 
-xy=dlmread(sprintf('%sxy.txt', dirname));
-
-
-%% read the Mosaic
-files = dir(fullfile(dirname,'Mosaic*.png'));
-mosaic=imread(sprintf('%s%s',dirname, files(1).name));
+%xy=dlmread(sprintf('%sxy.txt', dirname));
+xy=dlmread(sprintf('%sxy_blur_edge.txt', dirname));
 
 
 %% go to the parent directory and read a frame and read the size
@@ -41,7 +37,13 @@ filesFrame = dir(fullfile(FrameDir,'Fr*.png'));
 I=imread(fullfile(FrameDir, filesFrame(1).name));
 [Fm, Fn, ~]=size(I);
 
+%% read the Mosaic
+files = dir(fullfile(dirname,'Mosaic*.png')); 
+mosaic=imread(sprintf('%s%s',dirname, sprintf('Mosaic_%06d.png', size(filesFrame,1))));
+
+
 %% generate iMosaics
-getImosaicsColoredBorderFinal(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionBorderTogether);    
+getImosaicsColoredBorderFinalBlurry(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionBorderTogether);    
+%getImosaicsColoredBorderFinal(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionBorderTogether);    
 %getImosaicsColoredBorder2(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth);
 %getImosaicsFinal(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame);

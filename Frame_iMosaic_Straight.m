@@ -7,9 +7,9 @@ warning off;
 
 frameScale=1;
 
-dirnameFrame='/Volumes/F/Courses/MesenteryData/SFM_100_BI';
-dirnameMosaic='/Volumes/F/Courses/MesenteryData/SFM_100_BI/NCC/MosaicL';
-dirnameMotion='/Volumes/F/Courses/MesenteryData/SFM_100_BI/NCC/MosaicMotion';
+dirnameFrame='/Volumes/F/Courses/MesenteryData/Seq5';
+dirnameMosaic=sprintf('%s/NCC_60_100_150x200_ADD/MosaicL', dirnameFrame);
+dirnameMotion=sprintf('%s/NCC_60_100_150x200_ADD/MosaicMotion',dirnameFrame);
 
 dirnameOut=sprintf('%s/Fr_Mosaic_ST/', dirnameMosaic);
 if (~isdir(dirnameOut))
