@@ -13,7 +13,7 @@
 %--if border==2, border for all frames together
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function getImosaicsColoredBorderFinalBlurry(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, line, motionBorderTogether)
+function getMotionBorder(MM, xy, dirname, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, line, motionBorderTogether)
     
 %% output mosaicL and maskL directory
 dirnameOutMosaic=sprintf('%sMosaicL/',dirname); mkdir(dirnameOutMosaic);
@@ -38,34 +38,6 @@ for i=1:size(xy)
     m1=xy(i,2); m2=m1+Fm-1;
     n1=xy(i,1); n2=n1+Fn-1;       
     iMosaic(m1:m2, n1:n2, :)=Fr;
-    
-%     if i==1
-%         mosaicEdge=iMosaic;
-%     else
-%         
-%         Frame=Fr;
-%         mask(m1:m2, n1:n2, :)=1;    
-%         newPixels=mask-prevMask;
-%         newPixels=newPixels(m1:m2, n1:n2, :);
-%         
-%         if xy(i,10)> xy(i,11)
-%             %--REP
-%             mosaicEdge(m1:m2, n1:n2, :)=Fr;
-%         else
-%             %--ADD
-%             FrameADD=Fr;
-%             canvasROI=mosaicEdge(m1:m2, n1:n2, :);            
-%             canvasROI(newPixels==1)=0;
-%             FrameADD(newPixels==0)=0;
-%             canvasROI=uint8(canvasROI)+FrameADD;
-%             mosaicEdge(m1:m2, n1:n2, :)=uint8(canvasROI);
-%         end       
-%         
-%     end
-    
-%     %% updating iMosaic with mosaicEdge
-%     iMosaic=mosaicEdge;
-%     
     
 
     %% if we want to see motion
@@ -101,16 +73,21 @@ for i=1:size(xy)
     n1_m=max(1, n1-line); n1_p=min(N, n1+line);
     n2_m=max(1, n2-line); n2_p=min(N, n2+line);
 
-    if motionBorderTogether==1
-        iMosaicBrd=Motion;
-    else
-        iMosaicBrd=iMosaic;
-    end
+%     if motionBorderTogether==1
+%         iMosaicBrd=Motion;
+%     else
+%         iMosaicBrd=iMosaic;
+%     end
 
     iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 3)=clist(i, 3);
     iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 3)=clist(i, 3);
     iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 3)=clist(i, 3);
     iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 3)=clist(i, 3);
+    
+    
+    frameBrd=iMosaicBrd(m1_m:m2_p, n1_m:n2_p, :);
+    
+    
     %imshow(uint8(iMosaic));
     %%border control
 
