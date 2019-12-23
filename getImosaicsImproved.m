@@ -31,15 +31,16 @@ function dirnameOut=getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, files
     %% add frame number and save iMosaics
     %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
     str=sprintf('Frame_%04d',i);
-    Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
+    %Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
     fname=sprintf('iMosaic_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8(Iout),fname_wpath);   
+    imwrite(uint8(iMosaic),fname_wpath);   
    
     
     %% loop over
     for i=2:size(xy)
-        i       
+        fprintf('\nGenerating iMosaics for frame = %d', i);
+        
         %% get the next iMosaic
         Fr=imread(fullfile(FrameDir, filesFrame(i).name)); %--read next frame
         m1=xy(i,2); m2=m1+Fm-1;                            %--get positions
@@ -65,11 +66,11 @@ function dirnameOut=getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, files
 
         %% add frame number and save iMosaics
         %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
-        str=sprintf('Frame_%04d',i);
-        Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
+        %str=sprintf('Frame_%04d',i);
+        %Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
         fname=sprintf('iMosaic_%06d.png', i);
         fname_wpath=fullfile(dirnameOut,fname);
-        imwrite(uint8(Iout),fname_wpath);         
+        imwrite(uint8(iMosaic),fname_wpath);         
     end
 end
 

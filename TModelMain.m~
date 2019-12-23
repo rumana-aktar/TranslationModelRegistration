@@ -40,7 +40,7 @@ NCC = 1; %%1==NCC and 0==SURF
 
 %% pick blending methods
 ADD = 1;
-AVG = 0;
+AVG = 1;
 
 %% intermediate results
 saved_matched_Points = 0;
@@ -54,9 +54,9 @@ template_hight=150; template_width=200;
 
 
 %% input and output directory
-%dirname='/Volumes/F/Courses/MesenteryData/Seq5_fr30/';
-%dirname='/Volumes/F/Courses/MesenteryData/SFM_100/';
-dirname='/Volumes/D/Mesentery/Seq2/';
+dirname='/Volumes/F/Courses/MesenteryData/Seq5/';
+dirname='/Volumes/F/Courses/MesenteryData/SFM_100/';
+%dirname='/Volumes/F/Courses/MesenteryData/Sequence5_fr5_cropped2/';
 %dirname='/Volumes/F/Courses/MesenteryData/ABQ_Synthetic_blur2_alt/';
 %dirname='/Volumes/F/Courses/MesenteryData/ABQ_Synthetic/';
 
@@ -154,7 +154,8 @@ for i=1:no_Frames
     prevMaskROI=prevMask(ybegin:yend, xbegin:xend, :);
     diff1=diff(:,:, 1);    diff2=diff(:,:, 2);    diff3=diff(:,:, 3);
     diff1(prevMaskROI==0)=0;      diff2(prevMaskROI==0)=0;      diff3(prevMaskROI==0)=0;
-    [sum(diff1(:)) sum(diff2(:)) sum(diff3(:))];    
+    [sum(diff1(:)) sum(diff2(:)) sum(diff3(:))];
+    
     
     
     newPixels=mask-prevMask;
@@ -176,7 +177,10 @@ for i=1:no_Frames
     canvasEdgeResponse=sum(canvasEdge(:));
     frameEdge=edge(rgb2gray(Frame), 'Canny');
     frameEdge(newPixels==1)=0;  
-    frameEdgeResponse=sum(frameEdge(:));  
+    frameEdgeResponse=sum(frameEdge(:));
+    
+    [sum(canvasEdge(:)) sum(frameEdge(:))];
+  
 
     
     %% --------------------------------------------------------------------    
@@ -195,20 +199,28 @@ for i=1:no_Frames
     
     %% Edge effect
     if canvasEdgeResponse < frameEdgeResponse
+        %fuseMosaic=mosaic; %% new frame is better
         usingCanvasEdge=0;
         mosaicEdge(ybegin:yend, xbegin:xend, :)=Frame(:,:,:);
+        %fprintf('Edge...i=%d, Adding new frame content: mosaicREP',i);
     else
+        %fuseMosaic=mosaicADD; %% canvas is better
         mosaicEdge=updateMosaicADD(Frame, mask, prevMask, xbegin, ybegin, xend, yend, mosaicEdge);     
         usingCanvasEdge=1;
+        %fprintf('i=%d, Adding canvas content: mosaicADD', i);
     end
 
     %% blur effect
     if blurFrame < blurCanvas
+        %fuseMosaic=mosaic; %% new frame is better
         usingCanvasBlur=0;
         mosaicBLUR(ybegin:yend, xbegin:xend, :)=Frame(:,:,:);
+        %fprintf('Blur...i=%d, Adding new frame content: mosaicREP',i);
     else
-        mosaicBLUR=updateMosaicADD(Frame, mask, prevMask, xbegin, ybegin, xend, yend, mosaicBLUR);
+        %fuseMosaic=mosaicADD; %% canvas is better
+        mosaicBLUR=updateMosaicADD(Frame, mask, prevMask, xbegin, ybegin, xend, yend, mosaicBLUR);     
         usingCanvasBlur=1;
+        %fprintf('i=%d, Adding canvas content: mosaicADD', i);
     end
 
     %% --------------------------------------------------------------------    
@@ -222,10 +234,22 @@ for i=1:no_Frames
     pf_col_start=xbegin;
     pf_row_start=ybegin;     
     
+    [size(mosaicBLUR) size(mosaic) size(mosaicADD)];
+    
+    if mod(i,500)==0
+        %imshow(uint8([mosaicBLUR mosaic mosaicADD]));
+        fname=sprintf('MosaicFUSE_REP_ADD_%06d.png', i);
+        fname_wpath=fullfile(dirnameOut,fname);
+        imwrite(uint8([mosaicBLUR mosaicEdge mosaic mosaicADD]),fname_wpath); 
+    end    
+    c=1;
+
+    
+   
 end
 
 %% save xy location of intermediate mosaics: col(x)-row(y) fashion
-dlmwrite(sprintf('%sxy.txt',dirnameOut), xy(1:end, :));
+dlmwrite(sprintf('%sxy_blur_edge.txt',dirnameOut), xy(1:end, :));
 
 %% write output image
 fname=sprintf('MosaicREP_%06d.png', i);
@@ -242,24 +266,10 @@ fname=sprintf('MosaicEDGE_%06d.png', i);
 fname_wpath=fullfile(dirnameOut,fname);
 imwrite(uint8(mosaicEdge),fname_wpath); 
 
-
-
-if AVG==1 && ADD==1
- %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_ADD_AVG_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD mosaicAVG]),fname_wpath); 
-elseif ADD==1
-    %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_ADD_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
-else
-    %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic]),fname_wpath); 
-end
+%% write output mosaic using EDGE, BLUR, REP, ADD
+fname=sprintf('Mosaic_EDGE_BLUR_REP_ADD_%06d.png', i);
+fname_wpath=fullfile(dirnameOut,fname);
+imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
 
 if ADD==1
     %% write output image
