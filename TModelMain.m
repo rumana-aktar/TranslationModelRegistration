@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%-- Main: TranslationalMosaicModel_NCC_Feature.m
+%-- Main: TModelMain.m
 %-- Author: Rumana Aktar, 12/5/19
 %--------------------------------------------------------------------------
 %-- input: Sequence of images with translation motion only
@@ -157,6 +157,9 @@ for i=1:no_Frames
     [sum(diff1(:)) sum(diff2(:)) sum(diff3(:))];    
     
     
+    
+    %% --------------------------------------------------------------------    
+    %--required for EDGE and BLUR blending
     newPixels=mask-prevMask;
     newPixels=newPixels(ybegin:yend, xbegin:xend);        
     
