@@ -18,25 +18,26 @@
 clear all; clc;
 %% --------------------------------------------------------------------    
 %--parameters
-lineWidth=2;
-border=1;           %--if border==0, no border, 
+lineWidth=2;        %--border line width
+border=0;           %--if border==0, no border, 
                     %--if border==1, border for current frame only,
 motionOnImosaic=1;  %--if motionOnImosaic==0, do not show motion on top of iMosaicBlended
                     %--if motionOnImosaic==1, show motion on top of iMosaicBlended
-rootDir='/Volumes/F/Courses/MesenteryData/SFM_100/';   %Sequence5_fr6_cropped, SFM_100, Seq5_fr30         
 sameIMosaicDir=1;   %--if sameIMosaicDir=1, save the updated iMosaic at the preivous iMosaic direcotry
                     %--if sameIMosaicDir=0, save the updated iMosaic at a new direcotry
-frameScale=1;
+frameScale=2;       
 Vertical=1;         %--if Vertical=1, Mosaic will be in Vertial orientation
                     %--if Vertical==0, Mosaic will be in Horizontal orientation
-mosaicDir=sprintf('%sNCC_60_100_150x200/', rootDir);
 
 %% --------------------------------------------------------------------    
-%--iMosaic, iMotion and iAnimation directoty
+%--rootDirectory, mosaicDirectory, iMosaicDirectory, iMotionDirectory and iAnimationDirectory 
+rootDir='/Volumes/F/Courses/MesenteryData/Sequence2_fr6_cropped/';   %Sequence5_fr6_cropped, SFM_100, Seq5_fr30         
+rootDir='/Volumes/D/Mesentery/Seq2_half/';
+mosaicDir=sprintf('%sNCC_60_100_150x200/', rootDir);
+%% --------------------------------------------------------------------    
 iMosaicDirname=sprintf('%siMosaic/',mosaicDir);
 dirnameOutMotion=sprintf('%sMotionMap/',mosaicDir); 
 dirnameAnimationOut=sprintf('%sAnimation/',mosaicDir); 
-
 %% --------------------------------------------------------------------    
 %--iMosaicDirname='/Volumes/D/Mesentery/iMosaic/';
 % dirnameOutMotion='/Volumes/D/Mesentery/MotionMap/';
@@ -64,15 +65,15 @@ I=imread(fullfile(FrameDir, filesFrame(1).name));
 files = dir(fullfile(mosaicDir,'MosaicEDGE_0*.png')); 
 mosaic=imread(sprintf('%s%s',mosaicDir, sprintf('MosaicEDGE_%06d.png', size(filesFrame,1))));
 
-%% --------------------------------------------------------------------    
-%--generate iMosaics
-getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
-getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
-%--check frame_rate, frame_no=frame_no+5/1 before changing 
+% %% --------------------------------------------------------------------    
+% %--generate iMosaics
+% getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
+% getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
+% %--check frame_rate, frame_no=frame_no+5/1 before changing 
 if Vertical==1
-    generateAnimationVertical(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationOut);
+    generateAnimationVertical(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationOut, xy);
 else
-    generateAnimationHorizontal(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationOut);
+    generateAnimationHorizontal(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationOut, xy);
 end
 
 

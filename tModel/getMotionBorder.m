@@ -38,6 +38,10 @@ for i=1:size(xy)
     Fr=imread(fullfile(FrameDir, filesFrame(i).name));
     iMosaicBlended=imread(fullfile(iMosaicDirname, filesIMosaic(i).name));
     
+    if isnan(xy(i,1)) || isnan(xy(i,2))
+            continue;
+    end
+    
     m1=xy(i,2); m2=m1+Fm-1;
     n1=xy(i,1); n2=n1+Fn-1;       
     iMosaic(m1:m2, n1:n2, :)=Fr;

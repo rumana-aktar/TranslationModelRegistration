@@ -1,4 +1,4 @@
-function generateAnimationVertical(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut)
+function generateAnimationVertical(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut, xy)
 
 if (~isdir(dirnameOut))
     mkdir(dirnameOut);
@@ -16,34 +16,34 @@ filesMotion = dir(fullfile(dirnameMotion,'Mo*.png'));
 line=10;
 
 
-% %% seq5: whole sequence
+%% seq5: whole sequence
+   seq_name='Sequence Name -> VTS_01_5.VOB';
+ start_time='Start Time -> 16:54:43:32';
+   end_time='End Time -> 16:57:21:86';
+  time_intv='Time Interval -> 00:02:38:54';
+       date='Date -> 07-24';
+ frame_rate='Frame Rate -> 6(30)';
+ frame_size='Frame Size -> 720x480';
+str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
+fontSize=60;
+frame_no=501;frame_increase=1;
+text_x=100; text_y=100 ;
+
+
+
+% % seq5, fr+501:600
 %    seq_name='Sequence Name -> VTS_01_5.VOB';
-%  start_time='Start Time -> 16:54:43:32';
-%    end_time='End Time -> 16:57:21:86';
-%   time_intv='Time Interval -> 00:02:38:54';
+%  start_time='Start Time -> 16:56:06:09';
+%    end_time='End Time -> 16:56:22:59';
+%   time_intv='Time Interval -> 00:00:16:50';
 %        date='Date -> 07-24';
+%        date='FrameNo -> 07-24';
 %  frame_rate='Frame Rate -> 6(30)';
 %  frame_size='Frame Size -> 720x480';
 % str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
 % fontSize=40;
-% frame_no=1;
-% text_x=100; text_y=mF+100 ;
-
-
-
-% seq5, fr+501:600
-   seq_name='Sequence Name -> VTS_01_5.VOB';
- start_time='Start Time -> 16:56:06:09';
-   end_time='End Time -> 16:56:22:59';
-  time_intv='Time Interval -> 00:00:16:50';
-       date='Date -> 07-24';
-       date='FrameNo -> 07-24';
- frame_rate='Frame Rate -> 6(30)';
- frame_size='Frame Size -> 720x480';
-str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
-fontSize=40;
-frame_no=500*5+1;
-text_x=20; text_y=50;
+% frame_no=500*5+1; frame_increase=5;
+% text_x=20; text_y=50;
 
 
 
@@ -51,7 +51,11 @@ j=1;
 i=1;
 
 while (i<=size(filesMosaic,1))
-    fprintf('\nGenerating Vertical Animation for frame = %d', i);      
+    fprintf('\nGenerating Vertical Animation for frame = %d', i);   
+    
+    if isnan(xy(i,1)) || isnan(xy(i,2))
+        continue;
+    end
 
     %% read iMosaic
     IMosaic = imread(fullfile(dirnameMosaic, filesMosaic(i).name));  
@@ -87,7 +91,7 @@ while (i<=size(filesMosaic,1))
     imwrite(uint8(Canvas),fname_wpath);  
     i=i+1;
     j=j+1;
-    frame_no=frame_no+5;
+    frame_no=frame_no+frame_increase;
 end
 
 fprintf('\n');

@@ -46,6 +46,10 @@ function getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, blen
         m1=xy(i,2); m2=m1+Fm-1;                            %--get positions
         n1=xy(i,1); n2=n1+Fn-1;                            %--get positions
         
+        if isnan(xy(i,1)) || isnan(xy(i,2))
+            continue;
+        end
+        
         %% update mask and iMosaics
         mask(m1:m2, n1:n2, :)=1;                         %--update mask
         newPixels=mask-prevMask;                         %--new pixels being added

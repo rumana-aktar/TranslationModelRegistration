@@ -1,4 +1,4 @@
-function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy, no_matched] = getTranslation(I1, I2, displayMatches, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion)
+function  [mean_ix, mean_iy, mode_ix, mode_iy, no_matched] = getTranslation(I1, I2, displayMatches, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion)
    
     %% I1 is previous frame, so its strongest points should be considered; or it does not matter
     points1 = detectSURFFeatures(I1, 'MetricThreshold', 500);
@@ -29,6 +29,9 @@ function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy, n
     %--coords1 return XY location of matchedPoints
     coords1=matchedPoints1.Location;
     coords2=matchedPoints2.Location;
+    
+    
+    
     motion=zeros(size(coords1));
     motion(:,1)=coords1(:,1)-coords2(:,1);
     motion(:,2)=coords1(:,2)-coords2(:,2);
@@ -81,23 +84,18 @@ function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy, n
         
     end
     
-    mean_x=mean(motion(:,1)); std_x=std(motion(:,1));
-    mean_y=mean(motion(:,2)); std_y=std(motion(:,2));
+    inputPoints=double(coords2);
+    referencePoints=double(coords1);    
+    [tpr inliers] = ransacfithomography_vgg([inputPoints  repmat(1,size(inputPoints,1), 1)]',[referencePoints  repmat(1,size(referencePoints,1), 1)]' , 0.01 ) ;
+    coords2=inputPoints(inliers(1,:), :);
+    coords1=referencePoints(inliers(1, :), :);
+
     
-    mode_x=mode(motion(:,1));
-    mode_y=mode(motion(:,2));
+    motion=zeros(size(coords1));
+    motion(:,1)=coords1(:,1)-coords2(:,1);
+    motion(:,2)=coords1(:,2)-coords2(:,2);
     
-    %% RANSAC Outliers
-    index1=getOutliersRANSAC(motion(:,1), 1000, 1);
-    index2=getOutliersRANSAC(motion(:,2), 1000, 1);
     
-%     %% outlier removal
-%     index1=getOutliers(motion(:,1));
-%     index2=getOutliers(motion(:,2));
-%     
-    
-    index=union(index1, index2);    
-    motion(index, :)=[];
     
     if size(motion,1)==0
         motion=[1 1];
@@ -135,50 +133,4 @@ function  [mean_x, mean_y, mode_x, mode_y, mean_ix, mean_iy, mode_ix, mode_iy, n
  
 end
 
-function TF=getOutliers(A)
-    meanA=mean(A);
-    stdA=std(A);
-    %TF=zeros(size(A));
-    TF=[];
-    
-    for i=1:size(A,1)
-        if abs(meanA-A(i))>1
-            TF=[TF; i];
-        end
-    end
-end
 
-function outlierIndex=getOutliersRANSAC(A, iteration, threshold)
-    maxInliers=0;
-    bestInliersSet=[];
-
-    for k=1:iteration
-
-        %% get 4 random number
-        randomIndex = randi([1 size(A,1)],1,4);
-        randomNumbers=A(randomIndex, 1);
-
-        %% get mean of random numbers
-        meanNum=mean(randomNumbers);
-
-        %% get difference of all numbers and mean and reset h
-        meanNumAll=zeros(size(A)); h=meanNumAll;
-        meanNumAll(:)=meanNum;
-        A_diff=abs(A-meanNumAll);
-
-        %% find indexs which are close to mean
-        A_valid_indexes=find(A_diff<=threshold);
-        h(A_valid_indexes)=1;
-
-        
-        %% update maxInliers and best Inliers set
-        if size(A_valid_indexes,1)>maxInliers
-            bestInliersSet=h;
-            maxInliers=size(A_valid_indexes,1);
-        end
-        
-    end
-    
-    outlierIndex=find(h==0);
-    
-end

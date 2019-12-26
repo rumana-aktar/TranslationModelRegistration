@@ -1,4 +1,4 @@
-function generateAnimationHorizontal(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut)
+function generateAnimationHorizontal(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut, xy)
 
     if (~isdir(dirnameOut))
         mkdir(dirnameOut);
@@ -25,24 +25,24 @@ function generateAnimationHorizontal(frameScale, dirnameFrame, dirnameMosaic, di
     %  frame_size='Frame Size -> 720x480';
     % str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
     % fontSize=40;
-    % frame_no=1;
+    % frame_no=1;frame_increas=1;
     % text_x=20; text_y=50 ;
 
 
 
-    % seq5, fr+501:600
-       seq_name='Sequence Name -> VTS_01_5.VOB';
-     start_time='Start Time -> 16:56:06:09';
-       end_time='End Time -> 16:56:22:59';
-      time_intv='Time Interval -> 00:00:16:50';
-           date='Date -> 07-24';
-           date='FrameNo -> 07-24';
-     frame_rate='Frame Rate -> 6(30)';
-     frame_size='Frame Size -> 720x480';
-    str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
-    fontSize=20;
-    frame_no=500*5+1;
-    text_x=2; text_y=50;
+%     % seq5, fr+501:600
+%        seq_name='Sequence Name -> VTS_01_5.VOB';
+%      start_time='Start Time -> 16:56:06:09';
+%        end_time='End Time -> 16:56:22:59';
+%       time_intv='Time Interval -> 00:00:16:50';
+%            date='Date -> 07-24';
+%            date='FrameNo -> 07-24';
+%      frame_rate='Frame Rate -> 6(30)';
+%      frame_size='Frame Size -> 720x480';
+%     str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
+%     fontSize=20;
+%     frame_no=500*5+1;frame_increase=5;
+%     text_x=2; text_y=50;
 
 
     
@@ -90,7 +90,7 @@ function generateAnimationHorizontal(frameScale, dirnameFrame, dirnameMosaic, di
         imwrite(uint8(IMosaicT),fname_wpath);  
         i=i+1;
         j=j+1;
-        frame_no=frame_no+1;
+        frame_no=frame_no+frame_increase;
     end
     
 fprintf('\n');

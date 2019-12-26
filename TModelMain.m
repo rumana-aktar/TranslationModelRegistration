@@ -31,7 +31,9 @@ clc;
 clear all;
 warning off;
 
-addpath('./tModel/');
+folder = fileparts(which(mfilename)); 
+addpath(genpath(folder));
+start_frame=1;
 
 tic;
 
@@ -40,7 +42,7 @@ NCC = 1; %%1==NCC and 0==SURF
 
 %% pick blending methods
 ADD = 1;
-AVG = 0;
+AVG = 1;
 
 %% intermediate results
 saved_matched_Points = 0;
@@ -54,12 +56,9 @@ template_hight=150; template_width=200;
 
 
 %% input and output directory
-%dirname='/Volumes/F/Courses/MesenteryData/Seq5_fr30/';
-%dirname='/Volumes/F/Courses/MesenteryData/SFM_100/';
-dirname='/Volumes/D/Mesentery/Seq2/';
-%dirname='/Volumes/F/Courses/MesenteryData/ABQ_Synthetic_blur2_alt/';
-%dirname='/Volumes/F/Courses/MesenteryData/ABQ_Synthetic/';
-
+%--Seq5_fr30, ABQ_Synthetic_blur2_alt, ABQ_Synthetic, ABQ_Synthetic_N5, Sequence5_fr6_cropped
+dirname='/Volumes/F/Courses/MesenteryData/Sequence2_fr6_cropped/';
+%dirname='/Volumes/D/Mesentery/Seq2_half/';
 dirFrames=sprintf('%sFrames/', dirname);
 
 
@@ -90,7 +89,7 @@ no_Frames=size(files,1);
 if( no_Frames < 2 );     disp('at least two images with appropriate format in the directory');    return; end;% 
 
 %% read the very first image, mosaic and mask
-prevFrame = imread(fullfile(dirFrames, files(1).name)); [M,N,~]=size(prevFrame);
+prevFrame = imread(fullfile(dirFrames, files(start_frame).name)); [M,N,~]=size(prevFrame);
 pf_row_start=1; pf_col_start=1; yend=480; xend=720;
 
 %% initialization
@@ -107,10 +106,15 @@ prevMask=mask;
 
 %% location of Intermediate Mosaics
 xy=[]; xy_row=[];
+XY_Single_Multi=[];
 
 %% loop over for processing
-for i=1:no_Frames
+for i=start_frame:no_Frames %% starts from 1
     i
+    if i>=41
+        br=1;
+    end
+    %i
     [pf_col_start pf_row_start];
     
     %--Read frame and template
@@ -119,8 +123,12 @@ for i=1:no_Frames
     
     %% --------------------------------------------------------------------    
     %--xbeginFrame, ybeginFrame wrt previous Frame using either NCC or SURF
-    [xbeginFrame, ybeginFrame, matching_score]=getTranslationPrevFrame(NCC, template_row_start, template_hight, template_col_start, template_width, Frame, prevFrame, saved_matched_Points, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion,  SURF_Feature_Mean_Mode);
-
+    [xbeginFrame, ybeginFrame, matching_score, xySingleMulti]=getTranslationPrevFrame(NCC, template_row_start, template_hight, template_col_start, template_width, Frame, prevFrame, saved_matched_Points, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion,  SURF_Feature_Mean_Mode);
+    XY_Single_Multi=[XY_Single_Multi; xySingleMulti];
+    
+    if isnan(xbeginFrame) || isnan(ybeginFrame)
+        continue;
+    end
     
     %% --------------------------------------------------------------------    
     %--[xbegin, ybegin] is wrt to Mosaic, 
@@ -223,12 +231,20 @@ for i=1:no_Frames
     %--save for next iteration    
     prevMask=mask;
     pf_col_start=xbegin;
-    pf_row_start=ybegin;     
+    pf_row_start=ybegin; 
+    
+    if mod(i,250)==0
+        %% write output mosaic using EDGE, BLUR, REP, ADD
+        fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
+        fname_wpath=fullfile(dirnameOut,fname);
+        imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
+    end
     
 end
 
 %% save xy location of intermediate mosaics: col(x)-row(y) fashion
 dlmwrite(sprintf('%sxy.txt',dirnameOut), xy(1:end, :));
+dlmwrite(sprintf('%sXY_Single_Multi.txt',dirnameOut), XY_Single_Multi);
 
 %% write output image
 fname=sprintf('MosaicREP_%06d.png', i);
@@ -245,21 +261,22 @@ fname=sprintf('MosaicEDGE_%06d.png', i);
 fname_wpath=fullfile(dirnameOut,fname);
 imwrite(uint8(mosaicEdge),fname_wpath); 
 
-
+bd=ones(size(mosaicEdge,1), 20, 3)*255;
 
 if AVG==1 && ADD==1
  %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_ADD_AVG_%06d.png', i);
+    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_AVG_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD mosaicAVG]),fname_wpath); 
+    imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD bd mosaicAVG]),fname_wpath); 
+    
 elseif ADD==1
     %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_ADD_%06d.png', i);
+    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
+    imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD]),fname_wpath); 
 else
     %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('Mosaic_EDGE_BLUR_REP_%06d.png', i);
+    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
     imwrite(uint8([mosaicEdge mosaicBLUR mosaic]),fname_wpath); 
 end
