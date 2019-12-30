@@ -32,7 +32,7 @@ function getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, blen
     %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
     str=sprintf('Frame_%04d',i);
     %Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
-    fname=sprintf('iMosaic_%06d.png', i);
+    fname=sprintf('iMosaic_%06d.png', i-1);
     fname_wpath=fullfile(dirnameOut,fname);
     imwrite(uint8(iMosaic),fname_wpath);   
    
@@ -72,7 +72,7 @@ function getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, blen
         %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
         %str=sprintf('Frame_%04d',i);
         %Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
-        fname=sprintf('iMosaic_%06d.png', i);
+        fname=sprintf('iMosaic_%06d.png', i-1);
         fname_wpath=fullfile(dirnameOut,fname);
         imwrite(uint8(iMosaic),fname_wpath);         
     end

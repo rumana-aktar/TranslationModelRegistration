@@ -30,13 +30,21 @@ clist=colormap(jet(size(xy,1)));
 clist=clist*255;
 
 %% first mosaic
-iMosaic=zeros(M,N,3); mosaicLast=iMosaic; mosaicLastLast=iMosaic; mosaicEdge=iMosaic; mask=zeros(M,N,3); prevMask=mask; prevprevMask=mask;
+iMosaic=zeros(M,N,3); mosaicLast=iMosaic; mosaicLastLast=iMosaic; mosaicEdge=iMosaic; mask=zeros(M,N,3); prevMask=mask; prevprevMask=mask; pppMask=mask;
 for i=1:size(xy)
-    fprintf('\nGenerating Motion Map for frame = %d', i);      
+    fprintf('\nGenerating Motion Map for frame = %d', i);  
+    
+    if i==45
+        br=1;
+    end
 
     %% get the next iMosaic
     Fr=imread(fullfile(FrameDir, filesFrame(i).name));
     iMosaicBlended=imread(fullfile(iMosaicDirname, filesIMosaic(i).name));
+    xx=iMosaicBlended;
+    if border==2
+        iMosaicBrd=iMosaicBlended;
+    end
     
     if isnan(xy(i,1)) || isnan(xy(i,2))
             continue;
@@ -62,16 +70,16 @@ for i=1:size(xy)
         Motion(:,:,2)=mosaicLast(:,:,2);
         Motion(:,:,3)=iMosaic(:,:,3);
         
-%         %% for remove nonOverlapping region in consecutive 3 frames
-%         commonMask=prevprevMask;
-%         %Motion(commonMask==0)=0;
-%         %% for remove nonOverlapping region in consecutive 3 frames
+        %% for remove nonOverlapping region in consecutive 3 frames
+        commonMask=prevprevMask;
+        %Motion(commonMask==0)=0;
+        %% for remove nonOverlapping region in consecutive 3 frames
         
         mosaicLastLast=mosaicLast;
         mosaicLast=iMosaic;  
         prevprevMask=prevMask;
         prevMask=mask;
-        
+        Motion(pppMask==0)=0;
         %imshow(uint8([commonMask*255 iMosaic]))
     end
     
@@ -83,68 +91,38 @@ for i=1:size(xy)
 
     n1_m=max(1, n1-line); n1_p=min(N, n1+line);
     n2_m=max(1, n2-line); n2_p=min(N, n2+line);
-
-    %% if you want to show motion on top of iMosaicBlended
-    if motionOnImosaic==1
-        iMosaicBrd=Motion;
-    else
+    
+    iMosaicBlended(m1_m:m2_p, n1_m:n2_p, :)=Motion(m1_m:m2_p, n1_m:n2_p, :);    
+    if border==1
+        %% add borders
         iMosaicBrd=iMosaicBlended;
-    end
-    
-    %% add borders
-    iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 3)=clist(i, 3);
-    iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 3)=clist(i, 3);
-    iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 3)=clist(i, 3);
-    iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 3)=clist(i, 3);
-    
-    
-    if border==0 
-        if motionOnImosaic==0
-            ; %% nothing to do
-        else
-            iMosaicBlended(m1:m2, n1:n2, :)=Motion(m1:m2, n1:n2, :);
-        end
-        MotionFr=Motion(m1:m2, n1:n2, :);
-    elseif border==1
+        iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 3)=clist(i, 3);
+        iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 3)=clist(i, 3);
+        iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 3)=clist(i, 3);
+        iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 3)=clist(i, 3);
         iMosaicBlended(m1_m:m2_p, n1_m:n2_p, :)=iMosaicBrd(m1_m:m2_p, n1_m:n2_p, :);
-        %MotionFr=Motion(m1:m2, n1:n2, :);               %--individual motionFr without border
-        MotionFr=iMosaicBrd(m1_m:m2_p, n1_m:n2_p, :);    %--individual motionFr with border
-        
-%         if i>=3
-%             %% for remove nonOverlapping region in consecutive 3 frames
-%             iMosaicROI=iMosaicBlended(m1_m:m2_p, n1_m:n2_p, :);
-%             commonMaskROI=commonMask(m1_m:m2_p, n1_m:n2_p, :);
-%             iMosaicBrdROI=iMosaicBrd(m1_m:m2_p, n1_m:n2_p, :);
-%             iMosaicROI(commonMaskROI==1)=0;
-%             iMosaicBrdROI(commonMaskROI==0)=0;
-%             iMosaicROI=iMosaicROI+uint8(iMosaicBrdROI);
-%             iMosaicBlended(m1_m:m2_p, n1_m:n2_p, :)=iMosaicROI;
-%             %% for remove nonOverlapping region in consecutive 3 frames
-%             imshow(uint8([prevprevMask*255 iMosaicBlended]))
-%         end
-        
-
+    elseif border==2
+        iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m1_p, n1_m:n2_p, 3)=clist(i, 3);
+        iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m2_m:m2_p, n1_m:n2_p, 3)=clist(i, 3);
+        iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n1_m:n1_p, 3)=clist(i, 3);
+        iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 1)=clist(i, 1); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 2)=clist(i, 2); iMosaicBrd(m1_m:m2_p, n2_m:n2_p, 3)=clist(i, 3);
+        iMosaicBlended(m1_m:m2_p, n1_m:n2_p, :)=iMosaicBrd(m1_m:m2_p, n1_m:n2_p, :);
     end
-    
+    MotionFr=iMosaicBrd(m1:m2, n1:n2, :);
+
     %% save iMosaicBlended
     fname=sprintf('%s',filesIMosaic(i).name);
     fname_wpath=fullfile(dirnameOutMotionMosaic,fname);
-    imwrite(uint8(iMosaicBlended), fname_wpath);
-
-    
-%     %% just for saving the motion part frame seperately
-%     Im=iMosaicBrd(m1:m2, n1:n2, :);
-%     %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
-%     str=sprintf('Frame_%04d',i);
-%     Im=insertText(uint8(Im), [size(Im,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 30);
+    %imwrite(uint8([pppMask*255 iMosaicBlended]), fname_wpath);
+    imwrite(uint8([ iMosaicBlended]), fname_wpath);
     
     %% save motion on raw frame
-    fname=sprintf('Motion_%06d.png', i);
+    fname=sprintf('Motion_%06d.png', i-1);
     fname_wpath=fullfile(dirnameOutMotion,fname);
     imwrite(uint8(MotionFr),fname_wpath);    
     
-    %
 
+    pppMask=prevprevMask;
 
 end
 % fname=sprintf('%s%s','Motion_',filesFrame(i).name);

@@ -26,6 +26,19 @@
 % NCC = 0.1229 sec/frame % Feature = 0.2936 sec/frame for sequence5, imsize: 480x720
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------------------------- Timing ----------------------------------
+% Single-Template Seq4: NCC =    0.1999  sec/frame 
+% Multi-Template Seq4: NCC =      0.6585 sec/frame 
+% Single-Template Seq4: NCC =    0.2303  sec/frame 
+% Multi-Template Seq4: NCC =      0.7071 sec/frame 
+% Single-Template Seq3: NCC =    0.1682  sec/frame 
+% Multi-Template Seq3: NCC =    0.6499   sec/frame 
+% Single-Template Seq2: NCC =    0.1242  sec/frame 
+% Multi-Template Seq2: NCC =    0.5164   sec/frame 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 clc;
 clear all;
@@ -41,8 +54,9 @@ tic;
 NCC = 1; %%1==NCC and 0==SURF
 
 %% pick blending methods
-ADD = 1;
-AVG = 1;
+ADD = 0;
+AVG = 0;
+BLURM=0;
 
 %% intermediate results
 saved_matched_Points = 0;
@@ -57,7 +71,7 @@ template_hight=150; template_width=200;
 
 %% input and output directory
 %--Seq5_fr30, ABQ_Synthetic_blur2_alt, ABQ_Synthetic, ABQ_Synthetic_N5, Sequence5_fr6_cropped
-dirname='/Volumes/F/Courses/MesenteryData/Sequence2_fr6_cropped/';
+dirname='/Volumes/F/Courses/MesenteryData/Sequence4_fr6_cropped/';
 %dirname='/Volumes/D/Mesentery/Seq2_half/';
 dirFrames=sprintf('%sFrames/', dirname);
 
@@ -105,8 +119,10 @@ mask=ones(M,N);
 prevMask=mask;
 
 %% location of Intermediate Mosaics
-xy=[]; xy_row=[];
+xy=zeros(no_Frames, 12); xy_row=[];
 XY_Single_Multi=[];
+blurFrame=0; blurCanvas=0; usingCanvasBlur=0;
+SinTemplate=0; %0=multi, 1=single
 
 %% loop over for processing
 for i=start_frame:no_Frames %% starts from 1
@@ -123,7 +139,7 @@ for i=start_frame:no_Frames %% starts from 1
     
     %% --------------------------------------------------------------------    
     %--xbeginFrame, ybeginFrame wrt previous Frame using either NCC or SURF
-    [xbeginFrame, ybeginFrame, matching_score, xySingleMulti]=getTranslationPrevFrame(NCC, template_row_start, template_hight, template_col_start, template_width, Frame, prevFrame, saved_matched_Points, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion,  SURF_Feature_Mean_Mode);
+    [xbeginFrame, ybeginFrame, matching_score, xySingleMulti]=getTranslationPrevFrame(NCC, template_row_start, template_hight, template_col_start, template_width, Frame, prevFrame, saved_matched_Points, save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion,  SURF_Feature_Mean_Mode, SinTemplate);
     XY_Single_Multi=[XY_Single_Multi; xySingleMulti];
     
     if isnan(xbeginFrame) || isnan(ybeginFrame)
@@ -157,28 +173,20 @@ for i=start_frame:no_Frames %% starts from 1
     
     
     %% --------------------------------------------------------------------    
-    %--begug purpose
-    diff=mosaic(ybegin:yend, xbegin:xend, :)-Frame;
-    prevMaskROI=prevMask(ybegin:yend, xbegin:xend, :);
-    diff1=diff(:,:, 1);    diff2=diff(:,:, 2);    diff3=diff(:,:, 3);
-    diff1(prevMaskROI==0)=0;      diff2(prevMaskROI==0)=0;      diff3(prevMaskROI==0)=0;
-    [sum(diff1(:)) sum(diff2(:)) sum(diff3(:))];    
-    
-    
-    
-    %% --------------------------------------------------------------------    
     %--required for EDGE and BLUR blending
     newPixels=mask-prevMask;
-    newPixels=newPixels(ybegin:yend, xbegin:xend);        
+    newPixels=newPixels(ybegin:yend, xbegin:xend); 
     
-    %%  blur effects    
-    canvasROI=mosaicBLUR(ybegin:yend, xbegin:xend, :);
-    [mm, nn]=size(newPixels);newPixels3=zeros(mm,nn, 3);newPixels3(:,:,1)=newPixels;newPixels3(:,:,2)=newPixels;newPixels3(:,:,3)=newPixels;
-    canvasROI(newPixels3==1)=0;
-    blurCanvas = blurMetric(canvasROI);
-    frameROI=Frame;
-    frameROI(newPixels3==1)=0;
-    blurFrame = blurMetric(frameROI);
+    if BLURM==1
+        %%  blur effects    
+        canvasROI=mosaicBLUR(ybegin:yend, xbegin:xend, :);
+        [mm, nn]=size(newPixels);newPixels3=zeros(mm,nn, 3);newPixels3(:,:,1)=newPixels;newPixels3(:,:,2)=newPixels;newPixels3(:,:,3)=newPixels;
+        canvasROI(newPixels3==1)=0;
+        blurCanvas = blurMetric(canvasROI);
+        frameROI=Frame;
+        frameROI(newPixels3==1)=0;
+        blurFrame = blurMetric(frameROI);
+    end
     
     %% edge effect      
     canvasEdgeROI=mosaicEdge(ybegin:yend, xbegin:xend, :);
@@ -224,8 +232,7 @@ for i=start_frame:no_Frames %% starts from 1
 
     %% --------------------------------------------------------------------    
     %--update file for iMosaics
-    %xy= [xy; [xbegin ybegin size(mosaic,2) size(mosaic,1) i matching_score blurCanvas blurFrame usingCanvas]];
-    xy= [xy; [xbegin ybegin size(mosaic,2) size(mosaic,1) i matching_score  blurFrame blurCanvas usingCanvasBlur frameEdgeResponse canvasEdgeResponse usingCanvasEdge]];
+    xy(i, :)=[xbegin ybegin size(mosaic,2) size(mosaic,1) i matching_score  blurFrame blurCanvas usingCanvasBlur frameEdgeResponse canvasEdgeResponse usingCanvasEdge];
 
     %% --------------------------------------------------------------------    
     %--save for next iteration    
@@ -233,14 +240,20 @@ for i=start_frame:no_Frames %% starts from 1
     pf_col_start=xbegin;
     pf_row_start=ybegin; 
     
-    if mod(i,250)==0
-        %% write output mosaic using EDGE, BLUR, REP, ADD
-        fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
-        fname_wpath=fullfile(dirnameOut,fname);
-        imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
-    end
+%     if mod(i,250)==0
+%         %% write output mosaic using EDGE, BLUR, REP, ADD
+%         fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
+%         fname_wpath=fullfile(dirnameOut,fname);
+%         imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
+%     end
     
 end
+
+total_time=toc
+time_per_frame=total_time/no_Frames
+
+
+
 
 %% save xy location of intermediate mosaics: col(x)-row(y) fashion
 dlmwrite(sprintf('%sxy.txt',dirnameOut), xy(1:end, :));
@@ -251,10 +264,6 @@ fname=sprintf('MosaicREP_%06d.png', i);
 fname_wpath=fullfile(dirnameOut,fname);
 imwrite(uint8(mosaic),fname_wpath); 
 
-%% write output mosaic using BLUR metric
-fname=sprintf('MosaicBLUR_%06d.png', i);
-fname_wpath=fullfile(dirnameOut,fname);
-imwrite(uint8(mosaicBLUR),fname_wpath); 
 
 %% write output mosaic using EDGE metric
 fname=sprintf('MosaicEDGE_%06d.png', i);
@@ -263,22 +272,27 @@ imwrite(uint8(mosaicEdge),fname_wpath);
 
 bd=ones(size(mosaicEdge,1), 20, 3)*255;
 
-if AVG==1 && ADD==1
+if AVG==1 && ADD==1 && BLURM==1
  %% write output mosaic using EDGE, BLUR, REP, ADD
     fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_AVG_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
     imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD bd mosaicAVG]),fname_wpath); 
     
-elseif ADD==1
+elseif ADD==1 && BLURM==1
     %% write output mosaic using EDGE, BLUR, REP, ADD
     fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
     imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD]),fname_wpath); 
-else
+elseif BLURM==1
     %% write output mosaic using EDGE, BLUR, REP, ADD
     fname=sprintf('MosaicMulti_EDGE_BLUR_REP_%06d.png', i);
     fname_wpath=fullfile(dirnameOut,fname);
     imwrite(uint8([mosaicEdge mosaicBLUR mosaic]),fname_wpath); 
+else
+    %% write output mosaic using EDGE, BLUR, REP, ADD
+    fname=sprintf('MosaicMulti_EDGE_REP_%06d.png', i);
+    fname_wpath=fullfile(dirnameOut,fname);
+    imwrite(uint8([mosaicEdge mosaic]),fname_wpath); 
 end
 
 if ADD==1
@@ -297,8 +311,11 @@ if AVG==1
     %dlmwrite(sprintf('%sxy.txt',dirnameOutAVG), xy);
 end
 
-total_time=toc
-time_per_frame=total_time/no_Frames
-
+if BLURM==1
+    %% write output mosaic using BLUR metric
+    fname=sprintf('MosaicBLUR_%06d.png', i);
+    fname_wpath=fullfile(dirnameOut,fname);
+    imwrite(uint8(mosaicBLUR),fname_wpath); 
+end
 
 
