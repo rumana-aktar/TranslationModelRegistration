@@ -29,13 +29,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- Timing ----------------------------------
 % Single-Template Seq4: NCC =    0.1999  sec/frame 
-% Multi-Template Seq4: NCC =      0.6585 sec/frame 
+% Multi-Template Seq4: NCC =     0.6585 sec/frame 
 % Single-Template Seq4: NCC =    0.2303  sec/frame 
-% Multi-Template Seq4: NCC =      0.7071 sec/frame 
+% Multi-Template Seq4: NCC =     0.7071 sec/frame 
 % Single-Template Seq3: NCC =    0.1682  sec/frame 
-% Multi-Template Seq3: NCC =    0.6499   sec/frame 
+% Multi-Template Seq3: NCC =     0.6499   sec/frame 
 % Single-Template Seq2: NCC =    0.1242  sec/frame 
-% Multi-Template Seq2: NCC =    0.5164   sec/frame 
+% Multi-Template Seq2: NCC =     0.5164   sec/frame 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

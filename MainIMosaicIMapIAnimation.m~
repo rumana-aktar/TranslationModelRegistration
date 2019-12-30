@@ -35,7 +35,7 @@ onFrame=0;          %--if onFrame==0, footprint will be on black canvas
 %--rootDirectory, mosaicDirectory, iMosaicDirectory, iMotionDirectory and iAnimationDirectory 
 rootDir='/Volumes/F/Courses/MesenteryData/Sequence5_fr6_cropped/';   %Sequence5_fr6_cropped, SFM_100, Seq5_fr30         
 %rootDir='/Volumes/D/Mesentery/SFM_100/';
-mosaicDir=sprintf('%sNCC_60_100_150x200_MT/', rootDir);
+mosaicDir=sprintf('%sNCC_60_100_150x200/', rootDir);
 %% --------------------------------------------------------------------    
 iMosaicDirname=sprintf('%siMosaic/',mosaicDir);
 dirnameOutMotion=sprintf('%sMotionMap/',mosaicDir); 
