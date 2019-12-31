@@ -26,7 +26,7 @@ line=10;
  frame_size='Frame Size -> 720x480';
 str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
 fontSize=60;
-frame_no=501;frame_increase=1;
+frame_no=1;frame_increase=1;
 text_x=100; text_y=100 ;
 
 

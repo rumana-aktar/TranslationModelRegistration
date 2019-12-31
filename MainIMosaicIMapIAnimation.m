@@ -16,6 +16,9 @@
 
 %% --------------------------------------------------------------------    
 clear all; clc;
+folder = fileparts(which(mfilename)); 
+addpath(genpath(folder));
+
 %% --------------------------------------------------------------------    
 %--parameters
 lineWidth=1;        %--border line width
@@ -69,14 +72,14 @@ I=imread(fullfile(FrameDir, filesFrame(1).name));
 files = dir(fullfile(mosaicDir,'MosaicEDGE_0*.png')); 
 mosaic=imread(sprintf('%s%s',mosaicDir, sprintf('MosaicEDGE_%06d.png', size(filesFrame,1))));
 
+% % %% --------------------------------------------------------------------    
+% % %--generate image Foorprint
+% getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, onFrame);
+% getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, 1);
 % %% --------------------------------------------------------------------    
-% %--generate image Foorprint
-getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, onFrame);
-getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, 1);
-%% --------------------------------------------------------------------    
-%--generate iMosaics
-getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
-getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
+% %--generate iMosaics
+ getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
+% getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
 % %--check frame_rate, frame_no=frame_no+5/1 before changing 
 generateAnimationVertical(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationV, xy);
 generateAnimationHorizontal(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationH, xy);

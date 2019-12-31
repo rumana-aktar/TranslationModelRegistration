@@ -15,18 +15,18 @@ function generateAnimationHorizontal(frameScale, dirnameFrame, dirnameMosaic, di
     lines=10;
 
 
-   % %% seq5: whole sequence
-    %    seq_name='Sequence Name -> VTS_01_5.VOB';
-    %  start_time='Start Time -> 16:54:43:32';
-    %    end_time='End Time -> 16:57:21:86';
-    %   time_intv='Time Interval -> 00:02:38:54';
-    %        date='Date -> 07-24';
-    %  frame_rate='Frame Rate -> 6(30)';
-    %  frame_size='Frame Size -> 720x480';
-    % str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
-    % fontSize=40;
-    % frame_no=1;frame_increas=1;
-    % text_x=20; text_y=50 ;
+   %% seq5: whole sequence
+       seq_name='Sequence Name -> VTS_01_5.VOB';
+     start_time='Start Time -> 16:54:43:32';
+       end_time='End Time -> 16:57:21:86';
+      time_intv='Time Interval -> 00:02:38:54';
+           date='Date -> 07-24';
+     frame_rate='Frame Rate -> 6(30)';
+     frame_size='Frame Size -> 720x480';
+    str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
+    fontSize=40;
+    frame_no=1;frame_increase=1;
+    text_x=20; text_y=50 ;
 
 
 

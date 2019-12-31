@@ -254,8 +254,7 @@ time_per_frame=total_time/no_Frames
 
 
 plot(1:no_Frames, tx_ty(:,2), 'ro--', 1:no_Frames, tx_ty(:,3), 'b+--');
-legend('tx', 'ty');
-print(sprintf('%sTranslation', dirnameOut), '-dpng');
+save('');
 
 %% save xy location of intermediate mosaics: col(x)-row(y) fashion
 dlmwrite(sprintf('%sxy.txt',dirnameOut), xy(1:end, :));
