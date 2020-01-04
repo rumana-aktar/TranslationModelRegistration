@@ -28,21 +28,36 @@
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- Timing ----------------------------------
-% Single-Template Seq4: NCC =    0.1999  sec/frame 
-% Multi-Template Seq4: NCC =     0.6585 sec/frame 
-% Single-Template Seq4: NCC =    0.2303  sec/frame 
-% Multi-Template Seq4: NCC =     0.7071 sec/frame 
-% Single-Template Seq3: NCC =    0.1682  sec/frame 
-% Multi-Template Seq3: NCC =     0.6499   sec/frame 
-% Single-Template Seq2: NCC =    0.1242  sec/frame 
-% Multi-Template Seq2: NCC =     0.5164   sec/frame 
+% Single-Template Seq5: NCC =    0.1999 sec/frame 
+%  Multi-Template Seq5: NCC =    0.6585 sec/frame 
+%  Multi-Template Seq5: NCC =    0.3747 sec/frame (Search Window averaged over 20 iteration)
 
+%  Multi-Template Seq5: NCC =    0.3532+0.3758 sec/frame (Search Window + Improved RANSAC)
+% Single-Template Seq4: NCC =    0.2303 sec/frame 
+%  Multi-Template Seq4: NCC =    0.7071 sec/frame 
+%  Multi-Template Seq4: NCC =    0.4029 sec/frame (Search Window averaged over 20 iteration)
+
+% Single-Template Seq3: NCC =    0.1682 sec/frame 
+%  Multi-Template Seq3: NCC =    0.6499 sec/frame 
+%  Multi-Template Seq3: NCC =    0.3526 sec/frame (Search Window averaged over 20 iteration)
+
+% Single-Template Seq2: NCC =    0.1242 sec/frame 
+%  Multi-Template Seq2: NCC =    0.5164 sec/frame 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------SFM_100: maxTx=2, maxTy=56 Search Window Timing -------------
+%total_time =   39.1513; time_per_frame =   0.3915
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc;
 clear all;
-warning off;
+warning off; close all;
+
+TIMES=[];
+for TEST=1:20
+
+
 
 folder = fileparts(which(mfilename)); 
 addpath(genpath(folder));
@@ -71,7 +86,7 @@ template_hight=150; template_width=200;
 
 %% input and output directory
 %--Seq5_fr30, ABQ_Synthetic_blur2_alt, ABQ_Synthetic, ABQ_Synthetic_N5, Sequence5_fr6_cropped
-dirname='/Volumes/F/Courses/MesenteryData/Sequence4_fr6_cropped/';
+dirname='/Volumes/F/Courses/MesenteryData/Sequence2_fr6_cropped/';
 %dirname='/Volumes/D/Mesentery/Seq2_half/';
 dirFrames=sprintf('%sFrames/', dirname);
 
@@ -252,6 +267,7 @@ end
 total_time=toc
 time_per_frame=total_time/no_Frames
 
+TIMES=[TIMES time_per_frame]
 
 plot(1:no_Frames, tx_ty(:,2), 'ro--', 1:no_Frames, tx_ty(:,3), 'b+--');
 legend('tx', 'ty');
@@ -321,3 +337,4 @@ if BLURM==1
 end
 
 
+end
