@@ -28,35 +28,34 @@
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- Timing ----------------------------------
-% Single-Template Seq5: NCC =    0.1999 sec/frame 
-%  Multi-Template Seq5: NCC =    0.6585 sec/frame 
-%  Multi-Template Seq5: NCC =    0.3747 sec/frame (Search Window averaged over 20 iteration)
+% Single-Template Seq5: NCC =    0.2075 sec/frame (averaged over 20 iteration)
+%  Multi-Template Seq5: NCC =    0.6356 sec/frame (averaged over 20 iteration)
+%  Multi-Template Seq5: NCC =    0.3830 sec/frame (Search Window averaged over 7 iteration)
 
-%  Multi-Template Seq5: NCC =    0.3532+0.3758 sec/frame (Search Window + Improved RANSAC)
 % Single-Template Seq4: NCC =    0.2303 sec/frame 
-%  Multi-Template Seq4: NCC =    0.7071 sec/frame 
+%  Multi-Template Seq4: NCC =    0.7071 sec/frame (averaged over 20 iteration)
 %  Multi-Template Seq4: NCC =    0.4029 sec/frame (Search Window averaged over 20 iteration)
 
 % Single-Template Seq3: NCC =    0.1682 sec/frame 
-%  Multi-Template Seq3: NCC =    0.6499 sec/frame 
+%  Multi-Template Seq3: NCC =    0.6254 sec/frame (averaged over 20 iteration)
 %  Multi-Template Seq3: NCC =    0.3526 sec/frame (Search Window averaged over 20 iteration)
 
 % Single-Template Seq2: NCC =    0.1242 sec/frame 
-%  Multi-Template Seq2: NCC =    0.5164 sec/frame 
+%  Multi-Template Seq2: NCC =    0.5164 sec/frame (averaged over 20 iteration)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%-------------SFM_100: maxTx=2, maxTy=56 Search Window Timing -------------
-%total_time =   39.1513; time_per_frame =   0.3915
+% Single-Template SFM_100: NCC =    0.1274 sec/frame 10 iteration
+%  Multi-Template SFM_100: NCC =    0.3313 sec/frame 10 iteration
+% iMosaics: 0.0333
+% Single-Template SFM_100: NCC =    0.1274 sec/frame 10 iteration
+%  Multi-Template SFM_100: NCC =    0.2493+0.0333 sec/frame 10 iteration
+%     Multi-Template Seq5: NCC =    0.2687
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc;
 clear all;
 warning off; close all;
-
-TIMES=[];
-for TEST=1:20
-
 
 
 folder = fileparts(which(mfilename)); 
@@ -69,7 +68,7 @@ tic;
 NCC = 1; %%1==NCC and 0==SURF
 
 %% pick blending methods
-ADD = 0;
+ADD = 1;
 AVG = 0;
 BLURM=0;
 
@@ -86,7 +85,7 @@ template_hight=150; template_width=200;
 
 %% input and output directory
 %--Seq5_fr30, ABQ_Synthetic_blur2_alt, ABQ_Synthetic, ABQ_Synthetic_N5, Sequence5_fr6_cropped
-dirname='/Volumes/F/Courses/MesenteryData/Sequence2_fr6_cropped/';
+dirname='/Volumes/F/Courses/MesenteryData/Sequence3_fr6_cropped/';
 %dirname='/Volumes/D/Mesentery/Seq2_half/';
 dirFrames=sprintf('%sFrames/', dirname);
 
@@ -143,10 +142,6 @@ tx_ty=zeros(no_Frames, 3);
 %% loop over for processing
 for i=start_frame:no_Frames %% starts from 1
     i
-    if i>=41
-        br=1;
-    end
-    %i
     [pf_col_start pf_row_start];
     
     %--Read frame and template
@@ -252,14 +247,17 @@ for i=start_frame:no_Frames %% starts from 1
     %% --------------------------------------------------------------------    
     %--save for next iteration    
     prevMask=mask;
+    
+    
+    
     pf_col_start=xbegin;
     pf_row_start=ybegin; 
     
-%     if mod(i,250)==0
+%     if mod(i,1000)==0 || i>210
 %         %% write output mosaic using EDGE, BLUR, REP, ADD
-%         fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
+%         fname=sprintf('MosaicMulti_ADD_%06d.png', i);
 %         fname_wpath=fullfile(dirnameOut,fname);
-%         imwrite(uint8([mosaicEdge mosaicBLUR mosaic mosaicADD]),fname_wpath); 
+%         imwrite(uint8([mosaicADD]),fname_wpath); 
 %     end
     
 end
@@ -267,74 +265,6 @@ end
 total_time=toc
 time_per_frame=total_time/no_Frames
 
-TIMES=[TIMES time_per_frame]
+%% save results
+saveResults(i, no_Frames, tx_ty, xy, dirnameOut, XY_Single_Multi, mosaic, ADD, mosaicADD, AVG, mosaicAVG, mosaicEdge, BLURM, mosaicBLUR);
 
-plot(1:no_Frames, tx_ty(:,2), 'ro--', 1:no_Frames, tx_ty(:,3), 'b+--');
-legend('tx', 'ty');
-print(sprintf('%sTranslation', dirnameOut), '-dpng');
-
-%% save xy location of intermediate mosaics: col(x)-row(y) fashion
-dlmwrite(sprintf('%sxy.txt',dirnameOut), xy(1:end, :));
-dlmwrite(sprintf('%sXY_Single_Multi.txt',dirnameOut), XY_Single_Multi);
-
-%% write output image
-fname=sprintf('MosaicREP_%06d.png', i);
-fname_wpath=fullfile(dirnameOut,fname);
-imwrite(uint8(mosaic),fname_wpath); 
-
-
-%% write output mosaic using EDGE metric
-fname=sprintf('MosaicEDGE_%06d.png', i);
-fname_wpath=fullfile(dirnameOut,fname);
-imwrite(uint8(mosaicEdge),fname_wpath); 
-
-bd=ones(size(mosaicEdge,1), 20, 3)*255;
-
-if AVG==1 && ADD==1 && BLURM==1
- %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_AVG_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD bd mosaicAVG]),fname_wpath); 
-    
-elseif ADD==1 && BLURM==1
-    %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_ADD_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge bd mosaicBLUR bd mosaic bd mosaicADD]),fname_wpath); 
-elseif BLURM==1
-    %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('MosaicMulti_EDGE_BLUR_REP_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaicBLUR mosaic]),fname_wpath); 
-else
-    %% write output mosaic using EDGE, BLUR, REP, ADD
-    fname=sprintf('MosaicMulti_EDGE_REP_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8([mosaicEdge mosaic]),fname_wpath); 
-end
-
-if ADD==1
-    %% write output image
-    fname=sprintf('MosaicADD_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8(mosaicADD),fname_wpath); 
-    %dlmwrite(sprintf('%sxy.txt',dirnameOutADD), xy);
-end
-
-if AVG==1
-    %% write output image
-    fname=sprintf('MosaicAVG_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8(mosaicAVG),fname_wpath);   
-    %dlmwrite(sprintf('%sxy.txt',dirnameOutAVG), xy);
-end
-
-if BLURM==1
-    %% write output mosaic using BLUR metric
-    fname=sprintf('MosaicBLUR_%06d.png', i);
-    fname_wpath=fullfile(dirnameOut,fname);
-    imwrite(uint8(mosaicBLUR),fname_wpath); 
-end
-
-
-end

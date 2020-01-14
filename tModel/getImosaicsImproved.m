@@ -67,14 +67,11 @@ function getImosaicsImproved(MM, xy, dirname, Fm, Fn, FrameDir, filesFrame, blen
             iMosaic(m1:m2, n1:n2, :)=uint8(canvasROI);   %--update mosaicEdge
         end              
         prevMask=mask;                                   %--update prevMask for next iteratiton
-
-        %% add frame number and save iMosaics
-        %str=sprintf('%d: %6.5f %d', i, xy(i,9)-xy(i,8), xy(i,12)-xy(i,11));
-        %str=sprintf('Frame_%04d',i);
-        %Iout=insertText(uint8(iMosaic), [size(iMosaic,2), 1], str,'AnchorPoint', 'RightTop', 'fontSize', 60);
-        fname=sprintf('iMosaic_%06d.png', i-1);
-        fname_wpath=fullfile(dirnameOut,fname);
-        imwrite(uint8(iMosaic),fname_wpath);         
+        
+%         %% save Imosaics
+%         fname=sprintf('iMosaic_%06d.png', i-1);
+%         fname_wpath=fullfile(dirnameOut,fname);
+%         imwrite(uint8(iMosaic),fname_wpath);         
     end
 end
 

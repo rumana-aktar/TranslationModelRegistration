@@ -1,4 +1,4 @@
-function generateAnimationVertical(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut, xy)
+function generateAnimationVertical(frameScale, dirnameFrame, dirnameMosaic, dirnameMotion, dirnameOut, xy, seqNo, frameRate)
 
 if (~isdir(dirnameOut))
     mkdir(dirnameOut);
@@ -16,34 +16,46 @@ filesMotion = dir(fullfile(dirnameMotion,'Mo*.png'));
 line=10;
 
 
-%% seq5: whole sequence
-   seq_name='Sequence Name -> VTS_01_5.VOB';
- start_time='Start Time -> 16:54:43:32';
-   end_time='End Time -> 16:57:21:86';
-  time_intv='Time Interval -> 00:02:38:54';
-       date='Date -> 07-24';
- frame_rate='Frame Rate -> 6(30)';
- frame_size='Frame Size -> 720x480';
+
+
+if seqNo==3
+    seq_name='Sequence Name -> VTS_01_3.VOB'; %seq3
+    start_time='Start Time -> 16:48:05:92'; %seq3
+    end_time='End Time -> 16:52:03:65'; %seq3
+    time_intv='Time Interval -> 00:3:57:73'; %seq3
+    frame_no=728;
+elseif seqNo==4
+    seq_name='Sequence Name -> VTS_01_4.VOB'; %seq4
+    start_time='Start Time -> 16:52:09:60'; %seq4
+    end_time='End Time -> 16:54:14:78'; %seq4
+    time_intv='Time Interval -> 00:02:05:18'; %seq4
+    frame_no=1;
+elseif seqNo==5
+    seq_name='Sequence Name -> VTS_01_5.VOB'; %seq5
+    start_time='Start Time -> 16:54:43:32'; %seq5
+    end_time='End Time -> 16:57:21:86'; %seq5
+    time_intv='Time Interval -> 00:02:38:54'; %seq5
+    frame_no=1;
+end
+
+if frameRate==6
+    frame_rate='Frame Rate -> 6(30)';
+    frame_increase=5;
+    if seqNo==3
+        frame_no=728*5;
+    end
+else
+    frame_rate='Frame Rate -> 30';
+    frame_increase=1;
+end
+
+date='Date -> 07-24';
+frame_size='Frame Size -> 720x480';
 str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
 fontSize=60;
-frame_no=1;frame_increase=1;
 text_x=100; text_y=100 ;
 
 
-
-% % seq5, fr+501:600
-%    seq_name='Sequence Name -> VTS_01_5.VOB';
-%  start_time='Start Time -> 16:56:06:09';
-%    end_time='End Time -> 16:56:22:59';
-%   time_intv='Time Interval -> 00:00:16:50';
-%        date='Date -> 07-24';
-%        date='FrameNo -> 07-24';
-%  frame_rate='Frame Rate -> 6(30)';
-%  frame_size='Frame Size -> 720x480';
-% str_info=sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s', seq_name, start_time, end_time, time_intv, date, frame_rate, frame_size)
-% fontSize=40;
-% frame_no=500*5+1; frame_increase=5;
-% text_x=20; text_y=50;
 
 
 

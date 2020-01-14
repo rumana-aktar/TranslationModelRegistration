@@ -22,14 +22,14 @@ function outlierIndex=getOutliersRANSAC(A, iteration, threshold)
 
         
         %% update maxInliers and best Inliers set
-        if size(A_valid_indexes,1)>maxInliers %|| maxInliers>=6
+        if size(A_valid_indexes,1)>maxInliers || maxInliers>=6
             bestInliersSet=h;
             maxInliers=size(A_valid_indexes,1);
             maxInliers;
             
-%             if maxInliers>=6
-%                 break;
-%            end
+            if maxInliers>=6
+                break;
+           end
         end
         
     end

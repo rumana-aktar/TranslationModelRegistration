@@ -14,7 +14,7 @@ function [xbeginFrame, ybeginFrame, matching_score, xySingleMulti]=getTranslatio
             %% --------------------------------------------------------------------    
             %--find NCC from single template matching        
             template=Frame(template_row_start+1:template_row_start+template_hight, template_col_start+1:template_col_start+template_width, :);
-                c = normxcorr2(template(:,:,1),prevFrame(:,:,1));%figure, surf(c), shading flat    
+            c = normxcorr2(template(:,:,1),prevFrame(:,:,1));%figure, surf(c), shading flat    
             [max_c, imax] = max(abs(c(:)));
             [ypeak, xpeak] = ind2sub(size(c),imax(1));
             corr_offset = [(xpeak-size(template,2)) 
@@ -47,12 +47,12 @@ function [xbeginFrame, ybeginFrame, matching_score, xySingleMulti]=getTranslatio
                 xbeginFrame=NaN;
                 ybeginFrame=NaN;
             end
-            matching_score=-1;
+            matching_score=size(in_index,2);
         
         end     
         
         
-        
+     
         
     else
         [mean_ix, mean_iy, mode_ix, mode_iy, matching_score]=getTranslation(rgb2gray(prevFrame), rgb2gray(Frame), saved_matched_Points,save_tx_ty, i, dirnameOutFeatureMatched, dirnameOutMotion);    

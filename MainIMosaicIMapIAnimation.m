@@ -21,6 +21,9 @@ addpath(genpath(folder));
 
 %% --------------------------------------------------------------------    
 %--parameters
+seqNo=3;
+frameRate=6;
+
 lineWidth=1;        %--border line width
 border=1;           %--if border==0, no border, 
                     %--if border==1, border for current frame only,
@@ -38,7 +41,7 @@ onFrame=0;          %--if onFrame==0, footprint will be on black canvas
 %--rootDirectory, mosaicDirectory, iMosaicDirectory, iMotionDirectory and iAnimationDirectory 
 rootDir='/Volumes/F/Courses/MesenteryData/Sequence5_fr6_cropped/';   %Sequence5_fr6_cropped, SFM_100, Seq5_fr30         
 %rootDir='/Volumes/D/Mesentery/SFM_100/';
-mosaicDir=sprintf('%sNCC_60_100_150x200_MT/', rootDir);
+mosaicDir=sprintf('%sNCC_60_100_150x200/', rootDir);
 %% --------------------------------------------------------------------    
 iMosaicDirname=sprintf('%siMosaic/',mosaicDir);
 dirnameOutMotion=sprintf('%sMotionMap/',mosaicDir); 
@@ -67,27 +70,22 @@ filesFrame = dir(fullfile(FrameDir,'Fr*.png'));
 I=imread(fullfile(FrameDir, filesFrame(1).name));
 [Fm, Fn, ~]=size(I);
 
-%% --------------------------------------------------------------------    
+%% ------------------------------------------------------------------------   
 %--read the Mosaic
 files = dir(fullfile(mosaicDir,'MosaicEDGE_0*.png')); 
 mosaic=imread(sprintf('%s%s',mosaicDir, sprintf('MosaicEDGE_%06d.png', size(filesFrame,1))));
 
-% % %% --------------------------------------------------------------------    
-% % %--generate image Foorprint
-% getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, onFrame);
-% getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, 1);
-% %% --------------------------------------------------------------------    
-% %--generate iMosaics
- getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
-% getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
+
+%% ------------------------------------------------------------------------    
+% %--generate image Foorprint
+getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, onFrame);
+getImageFootPrint(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, lineWidth, 1);
+%% ------------------------------------------------------------------------    
+%--generate iMosaics
+getImosaicsImproved(mosaic, xy, mosaicDir, Fm, Fn, FrameDir, filesFrame, blendingMetric, iMosaicDirname);
+getMotionBorder(mosaic, xy, mosaicDir, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionOnImosaic, sameIMosaicDir, dirnameOutMotion);
+%% ------------------------------------------------------------------------    
 % %--check frame_rate, frame_no=frame_no+5/1 before changing 
-generateAnimationVertical(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationV, xy);
-generateAnimationHorizontal(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationH, xy);
+generateAnimationVertical(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationV, xy, seqNo, frameRate);
+generateAnimationHorizontal(frameScale, FrameDir, iMosaicDirname, dirnameOutMotion, dirnameAnimationH, xy, seqNo, frameRate);
 
-
-
-%--previous codes
-%getImosaicsColoredBorderFinalBlurry(mosaic, xy, dirname, iMosaicDirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionBorderTogether);    
-%getImosaicsColoredBorderFinal(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth, motionBorderTogether);    
-%getImosaicsColoredBorder2(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame, border, lineWidth);
-%getImosaicsFinal(mosaic, xy, dirname, Fm, Fn, FrameDir, filesFrame);
